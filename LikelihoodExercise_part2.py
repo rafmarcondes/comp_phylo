@@ -19,8 +19,10 @@ surface is unimodal (has just one peak). Our algorithm will be:
 """
 
 def cm(min,max) :
-
-    result=max 
+#the function is named after 'consecutive multiplication'. Its arguments are the minimum and maximum values. The
+#output is the result of the multiplication, and it is not automatically printed to the screen
+    result=max #since ranges in python are exclusive of the greater value, I initialize the product of the multiplication
+    # with it, as it will not be multiplied in the for loop below.
     for i in range (min,max) :
         result=result*i
     return result
@@ -35,11 +37,13 @@ def fbc(n,k) :
 
     bc=(p/(cm(1,k)))
     return bc
+    
         
 def ber(k,n,p) :
     pp=(fbc(n,k))*(pow(p,k))*(pow((1-p),(n-k)))
     return pp
     
+  
     
     
 pCurr=0.5 # I came up with an arbitrary starting parameter value of 0.5 Its likelihood i calculated below:
@@ -142,7 +146,7 @@ not necessary to create a working function.
 
 
 def findp(k,n,pStart,diff): #"""this is a function that uses a hill-climbing algorithm to find the parameter p (the probability of sucess) for a for a binomial, given k and n. The starting parameter and the initial step for the next parameter to be tried are provided by the user as arguments"""
-    def cm(min,max) :
+    def cm(min,max) : #i tried something new here: defining the more basic functions that will be necessary INSIDE the currrent function. it worked!
         result=max 
         for i in range (min,max) :
             result=result*i
@@ -180,9 +184,10 @@ def findp(k,n,pStart,diff): #"""this is a function that uses a hill-climbing alg
             diff=(diff/2)            
     return pCurr
     
-
 a=0
-a=(findp(49,50,0.3,0.1))
+
+
+a=(findp(4,5,0.3,0.1))
 
 
 """
@@ -203,31 +208,73 @@ that the probability of seeing an LR score that big or greater is <= 5%.
 
 # Set a starting, true value for p
 
-trueP = 
+trueP = 0.65
 
 # Simulate 1,000 datasets of 200 trials from a binomial with this p
 # If you haven't already done so, you'll want to import the binom class from scipy:
 # from scipy.stats import binom
 # binom.rvs(n,p) will then produce a draw from the corresponding binomial.
 
+from scipy.stats import binom
+
+datasets=[]
+for a in range(0,1000):
+    a=binom.rvs(200,trueP)
+    datasets.append(a)
+print datasets
 
 
 # Now find ML parameter estimates for each of these trials
 
-
+mlplist=[]
+for i in datasets :
+    mlp=findp(i,200,0.5,0.01)
+    mlplist.append(mlp)
+    
+print (mlplist)
 
 # Calculate likelihood ratios comparing L(trueP) in the numerator to the maximum
-# likelihood (ML) in the denominator. Sort the results and find the value
-# corresponding to the 95th percentile.
+# likelihood (ML) in the denominator. 
 
+#Sort the results and find the value corresponding to the 95th percentile.
+
+ratiolist=[]
+for i in range (0,200) :
+    LtrueP=ber(datasets[i],200,trueP)
+    print('LtrueP=',LtrueP)
+    Ratio=LtrueP/mlplist[i]
+    ratiolist.append(Ratio)
+    
+
+ratiolist.sort()
+import numpy as np
+percentile=np.percentile(ratiolist,95)
+
+print('the 95th percentile of the LRs is',percentile)
 
 
 # Now, convert the likelihood ratios (LRs) to -2ln(LRs) values.
+
+import math
+logratios=[]
+for i in range(0,200) :
+    logl=-2*(math.log(ratiolist[i]))
+    logratios.append(logl)
+print logratios
+    
+
+
+
 # Find the 95th percentile of these values. Compare these values to this table:
 # https://people.richland.edu/james/lecture/m170/tbl-chi.html. In particular, look
 # at the 0.05 column. Do any of these values seem similar to the one you calculated?
 # Any idea why that particular cell would be meaningful?
 
+#my answer: my 95th percentile is 8.7216. THe value closest to it at the 0.05 column is 9,488, for 4 df.
+
+logratios.sort()
+import numpy as np
+percentile=np.percentile(logratios,95)
 
 
 # Based on your results (and the values in the table), what LR statistic value 
@@ -243,6 +290,7 @@ trueP =
 
 # We've talked in previous classes about two ways to interpret probabilities. Which
 # interpretation are we using here to define these intervals?
+
 
 
 
