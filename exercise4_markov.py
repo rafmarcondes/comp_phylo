@@ -97,7 +97,6 @@ def sdd(events,probs):
 # a list. Draw a random state to initiate the chain.
 
 
-
 def markov(states,matrix,s) :
     """A function to simulate a discrete markov chain. Argument 'states' is a list or tuple representing the state space.
     'Matrix' is a transition probability matrix (a list of lists). 's' is the number of steps to run the chain for.
@@ -105,12 +104,13 @@ def markov(states,matrix,s) :
     steplist=[]    
     currstate=random.choice(states)
     for n in range (s) :
-        if currstate=="a":
-            currstate=sdd(["a","b"],matrix[0])
-        if currstate=="b":
-            currstate=sdd(["a","b"],matrix[1])
+        if currstate==states[0]:
+            currstate=sdd(states,matrix[0])
+        if currstate==states[1]:
+            currstate=sdd(states,matrix[1])
         steplist.append(currstate)
     return (steplist)
+        
         
 
 # Run a simulation of 10 steps and print the output.
