@@ -99,7 +99,7 @@ def sdd(events,probs):
 
 
 def markov(states,matrix,s) :
-    """A function to simulate a discrete markov chain. Argument 'states' is a list representing the state space.
+    """A function to simulate a discrete markov chain. Argument 'states' is a list or tuple representing the state space.
     'Matrix' is a transition probability matrix (a list of lists). 's' is the number of steps to run the chain for.
     IMPORTANT: this function is dependent on my discrete sampling function, 'sdd'."""
     steplist=[]    
