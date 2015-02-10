@@ -127,14 +127,55 @@ print(markov(staspa,mymatrix,10))
 # end in each state? How does this change as you change the transition matrix?
 
 
+laststeps=[]
+for n in range(100) : #run the 100 simulations
+    chain=markov(("A","B"),[[0.1,0.9],[0.2,0.8]],100)  #assign each chain to 'chain'
+    laststeps.append(chain[99]) #append the 10th (index 99) step of each chain to a laststeps list
+print laststeps 
+
+acount=0   
+for i in laststeps : #count the number of times that the chains ended in "A"
+    if i=="A" :
+        acount+=1
+print "OUT OF 100 CHAINS,", acount, "ENDED IN A"
+    
+"""It seems that the smaller I set the probability of transitioning to A ( A->A as well as B->A), the less
+often the chains end in A"""
 
 
 # Try defining a state space for nucleotides: A, C, G, and T. Now define a 
 # transition matrix with equal probabilities of change between states.
 
+nucs=("A","C","T","G")
+nucmatrix=[[0.01,0.33,0.33,0.33],[0.1,0.3,0.3,0.3],[0.1,0.3,0.3,0.3],[0.1,0.3,0.3,0.3]]
 
-
-         
 # Again, run 100 simulations of 100 steps and look at the ending states. Then
 # try changing the transition matrix.
          
+laststeps=[]
+for n in range(100) : #run the 100 simulations
+    chain=markov(nucs,nucmatrix,100)  #assign each chain to 'chain'
+    laststeps.append(chain[99]) #append the 10th (index 99) step of each chain to a laststeps list
+print laststeps 
+
+acount=0
+tcount=0
+ccount=0
+gcount=0 
+for i in laststeps : #count the number of times that the chains ended in "A"
+    if i=="A" :
+        acount+=1
+    if i=="T" :
+        tcount+=1 
+    if i=="G" :
+        gcount+=1
+    if i=="C" :
+        ccount+=1
+print "OUT OF 100 CHAINS,", acount, "ENDED IN A"
+print "OUT OF 100 CHAINS,", ccount, "ENDED IN C"
+print "OUT OF 100 CHAINS,", tcount, "ENDED IN T"
+print "OUT OF 100 CHAINS,", gcount, "ENDED IN G"
+
+"""For an uniform transition probability matrix (each transition prob=0.25), each nucleotide tends to be
+in the end of the chain 25% of times. As i reduce the probs of transitioning to a nucleotide, it appears less
+often in the end of a chain"""
