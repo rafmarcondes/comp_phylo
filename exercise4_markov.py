@@ -106,7 +106,7 @@ IMPORTANT: this function is dependent on my discrete sampling function, 'sdd'.""
     for n in range (s) :
         if currstate==states[0]:
              currstate=sdd(states,matrix[0])
-        if currstate==states[1]:
+        elif currstate==states[1]:
              currstate=sdd(states,matrix[1])
         steplist.append(currstate)
     return (steplist)
