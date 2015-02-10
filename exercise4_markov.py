@@ -108,11 +108,11 @@ def markov(states,matrix,length) :
     chain=[]
     currstate=random.choice(states)
     chain.append(currstate)
-    for i in range (length) :
+    for i in range ((length-1)) :
         for j in range (len(states)) :
             if currstate==states[j] :
                 currstate=sdd(states,matrix[j])
-                chain.append(currstate)
+        chain.append(currstate)
     return(chain)
         
 
