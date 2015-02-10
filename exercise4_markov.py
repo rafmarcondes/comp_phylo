@@ -1,7 +1,7 @@
 """
 Exercise 4
 Discrete-time Markov chains
-@author: jembrown
+@author: rafmarcondes
 """
 
 """
