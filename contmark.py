@@ -6,6 +6,11 @@ Created on Wed Feb 25 10:33:05 2015
 """
 
 def sdd(events,probs):
+    """This function is named after "Sample from Discrete Distribution". It takes as arguments two lists,
+    'events' and 'probs', in which 'probs' contains floats 
+    representing probabilities associated, respectively, with the itens in 'events', that can be strings, 
+    floats, ints, or any data type. The two lists must be of same size."""
+    
     import random
     nprobs=[x*1000 for x in probs] #so, here i multiply each float in 'probs' by 1000 and store the products in 'nprobs'
     newlist=[]
@@ -23,7 +28,7 @@ def contmark(states,q,v) :
     IMPORTANT3: this function is dependendt on my discrete sampling function, 'sdd', pasted above"""
     import scipy as sp
     import random
-    t=sp.linalg.expm(q*v) #get the transition probability matrix from the q-matrix
+    statup=tuple(states)
     chain=[]
     times=[]
     elapsedtime=0 #initialize a variable for the elapsed time
@@ -43,15 +48,20 @@ def contmark(states,q,v) :
         wt=random.expovariate(lambd) #use the appropriate lambda to draw a waiting time
         times.append(wt)
         elapsedtime+=wt
-        """this series of if/elif statements draws the next state"""
+        """this series of if/elif statements draws the next state"""       
         if currstate=='a' :
-            currstate=sdd(states,t[0])
-        elif currstate=='c':
-            currstate=sdd(states,t[1])
-        elif currstate=='g':
-            currstate=sdd(states,t[2])
-        elif currstate=='t':
-            currstate=sdd(states,t[3])       
+            states.remove('a')
+            currstate=sdd(states,(q.item(1),q.item(2),q.item(3)))
+        elif currstate=='c' :
+            states.remove('c')
+            currstate=sdd(states,(q.item(4),q.item(6),q.item(7)))
+        elif currstate=='g' :
+            states.remove('g')
+            currstate=sdd(states,(q.item(8),q.item(9),q.item(11)))
+        elif currstate=='t' :
+            states.remove('t')
+            currstate=sdd(states,(q.item(12),q.item(13),q.item(14))   )
         chain.append(currstate)
+        states=list(statup)
     return chain, times
-
+    
