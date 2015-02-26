@@ -28,7 +28,9 @@ def contmark(states,q,v) :
     IMPORTANT3: this function is dependendt on my discrete sampling function, 'sdd', pasted above"""
     import scipy as sp
     import random
-    statup=tuple(states)
+    statup=tuple(states) 
+    """during the function, i'll have to remove elements from the 'states' list, but later reset the list 
+    to its original composition. i'll use the 'statup' tuple as a 'backup'to do that"""
     chain=[]
     times=[]
     elapsedtime=0 #initialize a variable for the elapsed time
@@ -36,7 +38,8 @@ def contmark(states,q,v) :
     chain.append(currstate)
     wt=0 #initialize the waiting time variable
     while elapsedtime<v :
-        """this series of if statements chooses the appropriate lambda (rate of the exponential distribution), given the currente state"""
+        """this series of if statements chooses the appropriate lambda (rate of the 
+        exponential distribution), given the currente state"""
         if currstate=='a' :
             lambd=-(q.item(0,0))
         if currstate=='c' :
@@ -50,7 +53,7 @@ def contmark(states,q,v) :
         elapsedtime+=wt
         """this series of if/elif statements draws the next state"""       
         if currstate=='a' :
-            states.remove('a')
+            states.remove('a') #in order not to draw the same state as the current one
             currstate=sdd(states,(q.item(1),q.item(2),q.item(3)))
         elif currstate=='c' :
             states.remove('c')
@@ -62,6 +65,6 @@ def contmark(states,q,v) :
             states.remove('t')
             currstate=sdd(states,(q.item(12),q.item(13),q.item(14))   )
         chain.append(currstate)
-        states=list(statup)
+        states=list(statup) #reset the 'states' list to its original composition
     return chain, times
     
