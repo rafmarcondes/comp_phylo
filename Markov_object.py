@@ -29,18 +29,20 @@ class MarkovChain(object): #define class. whatever is inside the parentheses tel
 #attributes from. (object) tells that it inherits from nothing
     def __init__(self, q, states,v): #a constructor. defines the variables i want associated with this 
     #instance of class
-        self.q=q #a q matrix
-        self.states=states #the state space
-        self.v=v #a branch length
+        self.q=q 
+        self.states=states
+        self.v=v
       
-        
-    def contmark(self) :        
-        """IMPORTANT:rows and columns in the q-matrix MUST be in the order a,c,g,t
+            
+    def contmark(self) :
+        """IMPORTANT:rows and columns in the q-matrix MUST be in the order ACGT
         IMPORTANT2: the q-matrix should be a numpy matrix object, a 'list of lists' won't work
         IMPORTANT3: this function is dependendt on my discrete sampling function, 'sdd', pasted above"""
         import scipy as sp
         import random
         statup=tuple(self.states) 
+        """during the function, i'll have to remove elements from the 'states' list, but later reset the list 
+        to its original composition. i'll use the 'statup' tuple as a 'backup'to do that"""
         chain=[]
         times=[]
         elapsedtime=0 #initialize a variable for the elapsed time
@@ -48,6 +50,8 @@ class MarkovChain(object): #define class. whatever is inside the parentheses tel
         chain.append(currstate)
         wt=0 #initialize the waiting time variable
         while elapsedtime<self.v :
+            """this series of if statements chooses the appropriate lambda (rate of the 
+            exponential distribution), given the currente state"""
             if currstate=='a' :
                 lambd=-(self.q.item(0,0))
             if currstate=='c' :
@@ -57,8 +61,14 @@ class MarkovChain(object): #define class. whatever is inside the parentheses tel
             if currstate=='t' :
                 lambd=-(self.q.item(3,3))
             wt=random.expovariate(lambd) #use the appropriate lambda to draw a waiting time
-            times.append(wt)
             elapsedtime+=wt
+            if elapsedtime>self.v : 
+                """if elapsedtime will exceed v with the addition of the last wt, 
+                then undo its addition to elapsed time and break the while loop, because v has been reached"""
+                elapsedtime-=wt
+                break
+            times.append(wt)
+            """this series of if/elif statements draws the next state"""       
             if currstate=='a' :
                 self.states.remove('a') #in order not to draw the same state as the current one
                 currstate=sdd(self.states,(self.q.item(1),self.q.item(2),self.q.item(3)))
@@ -73,14 +83,19 @@ class MarkovChain(object): #define class. whatever is inside the parentheses tel
                 currstate=sdd(self.states,(self.q.item(12),self.q.item(13),self.q.item(14))   )
             chain.append(currstate)
             self.states=list(statup) #reset the 'states' list to its original composition
+        times.append(self.v-elapsedtime) 
+        """append to the times list the difference between the elapsed time so far andv, so that the final elapsedtime, or sum(times), equals v"""
         return chain, times
-    
+
 
 """"ok, created the class, now let's try to use it:"""
 
+
 import numpy
 bla=numpy.matrix('-1.916 0.541 0.787 0.588; 0.148 -1.069 0.415 0.506; 0.286 0.170 -0.591 0.135; 0.525 0.236 0.594 -1.355')
+
 mymarkov=MarkovChain(q=bla, states=['a','c','g','t'], v=5) #create an instance of MarkovChain class  
 
-print mymarkov.q #retrieve matrix variable from object
-print mymarkov.contmark() #use contmark method to obtain a chain
+print mymarkov.q #Try to retrieve matrix variable from object - it works!
+
+print mymarkov.contmark() #this also wroks!!!! 
