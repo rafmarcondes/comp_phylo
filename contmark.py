@@ -36,6 +36,7 @@ def contmark(states,q,v) :
     elapsedtime=0 #initialize a variable for the elapsed time
     currstate=random.choice(states) #randomly choose the initial state
     chain.append(currstate)
+    ct.append(currstate)
     wt=0 #initialize the waiting time variable
     while elapsedtime<v :
         """this series of if statements chooses the appropriate lambda (rate of the 
@@ -49,8 +50,12 @@ def contmark(states,q,v) :
         if currstate=='t' :
             lambd=-(q.item(3,3))
         wt=random.expovariate(lambd) #use the appropriate lambda to draw a waiting time
-        times.append(wt)
         elapsedtime+=wt
+        if elapsedtime>v : """if elapsedtime will exceed v with the addition of the last wt, 
+        then undo its addition to elapsed time and break the while loop, because v has been reached"""
+            elapsedtime-=wt
+            break
+        times.append(wt)
         """this series of if/elif statements draws the next state"""       
         if currstate=='a' :
             states.remove('a') #in order not to draw the same state as the current one
@@ -65,6 +70,10 @@ def contmark(states,q,v) :
             states.remove('t')
             currstate=sdd(states,(q.item(12),q.item(13),q.item(14))   )
         chain.append(currstate)
+        ct.append(currstate)
         states=list(statup) #reset the 'states' list to its original composition
+    times.append(v-elapsedtime) """append to the times list the difference between the elapsed time so far and
+    v, so that the final elapsedtime, or sum(times), equals v"""
     return chain, times
-    
+
+
