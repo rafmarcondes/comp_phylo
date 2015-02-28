@@ -3,7 +3,7 @@ def timeperstate(chainandtimes) :
     between transitions.
     INPUT: a single argument, which must be a list or tuple in the format (chain,times), in which chain and times
     also are lists or tuples. This is the format of the output of my contmark function
-    OUTPUT: a list with for itens, each being the total time spent in states a, c, g and t, in that order"""
+    OUTPUT: a list with 4 itens, each being the total time spent in states a, c, g and t, in that order"""
     chain=chainandtimes[0]
     times=chainandtimes[1]
     ttime=0
