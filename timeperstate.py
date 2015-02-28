@@ -1,6 +1,6 @@
 def timeperstate(chainandtimes) :
     """a function that calculates the times spent in each state, given a markov chain and the waiting times
-    between transition.
+    between transitions.
     INPUT: a single argument, which must be a list or tuple in the format (chain,times), in which chain and times
     also are lists or tuples. This is the format of the output of my contmark function
     OUTPUT: a list with for itens, each being the total time spent in states a, c, g and t, in that order"""
