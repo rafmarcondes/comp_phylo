@@ -27,11 +27,13 @@ def sdd(events,probs):
 
 class MarkovChain(object): #define class. whatever is inside the parentheses tells python what class markov inherits 
 #attributes from. (object) tells that it inherits from nothing
-    def __init__(self, q, states,v): #a constructor. defines the variables i want associated with this 
+    def __init__(self, q, states,v,chain,times): #a constructor. defines the variables i want associated with this 
     #instance of class
         self.q=q 
         self.states=states
         self.v=v
+        self.chain=chain
+        self.times=times
       
             
     def contmark(self) :
@@ -85,7 +87,33 @@ class MarkovChain(object): #define class. whatever is inside the parentheses tel
             self.states=list(statup) #reset the 'states' list to its original composition
         times.append(self.v-elapsedtime) 
         """append to the times list the difference between the elapsed time so far andv, so that the final elapsedtime, or sum(times), equals v"""
+        self.chain=chain #updtate the attributes chain and times to contain the output of the simulation
+        self.times=times
         return chain, times
+        
+    def timeperstate(self) :
+        """OUTPUT: a list with for itens, each being the total time spent in states a, c, g and t, in that order"""
+        ttime=0
+        atime=0
+        ctime=0
+        gtime=0
+        for n in range(0,len(self.chain)):
+                if self.chain[n]=='a' :
+                    atime+=self.times[n]
+                if self.chain[n]=='c' :
+                    ctime+=self.times[n]
+                if self.chain[n]=='t' :
+                    ttime+=self.times[n]
+                if self.chain[n]=='g' :
+                    gtime+=self.times[n]
+        actgtimes=[]
+        actgtimes.append(atime)
+        actgtimes.append(ctime)
+        actgtimes.append(gtime)
+        actgtimes.append(ttime)
+        return actgtimes
+    
+           
 
 
 """"ok, created the class, now let's try to use it:"""
@@ -94,8 +122,10 @@ class MarkovChain(object): #define class. whatever is inside the parentheses tel
 import numpy
 bla=numpy.matrix('-1.916 0.541 0.787 0.588; 0.148 -1.069 0.415 0.506; 0.286 0.170 -0.591 0.135; 0.525 0.236 0.594 -1.355')
 
-mymarkov=MarkovChain(q=bla, states=['a','c','g','t'], v=5) #create an instance of MarkovChain class  
+mymarkov=MarkovChain(q=bla, states=['a','c','g','t'], v=5, chain=[], times=[]) #create an instance of MarkovChain class  
 
 print mymarkov.q #Try to retrieve matrix variable from object - it works!
 
 print mymarkov.contmark() #this also wroks!!!! 
+
+print mymarkov.timeperstate() #same here!!
