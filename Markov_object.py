@@ -92,7 +92,7 @@ class MarkovChain(object): #define class. whatever is inside the parentheses tel
         return chain, times
         
     def timeperstate(self) :
-        """OUTPUT: a list with for itens, each being the total time spent in states a, c, g and t, in that order"""
+        """OUTPUT: a list with 4 itens, each being the total time spent in states a, c, g and t, in that order"""
         ttime=0
         atime=0
         ctime=0
