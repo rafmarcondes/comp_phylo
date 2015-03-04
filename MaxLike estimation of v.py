@@ -8,7 +8,7 @@ Created on Wed Mar 04 10:26:34 2015
 """a function to find a maximum likelihood estimate of v"""
 
 def margprob(initial,final,q,v) :
-    """A function to find the margprob of a final state, given the initial state. Rows and lines on q-matrix
+    """A function to find the margprob of a final state, given the initial state. Rows and columns on q-matrix
     must be in order a, c, g, t."""
     import scipy    
     pmatrix=scipy.linalg.expm(q*v)
@@ -36,7 +36,7 @@ def margprob(initial,final,q,v) :
 
 def mlv(initial,final,q,vStart,diff): 
     """a function to find the ML estimate of the branch length (v) between known initial and final states of a 
-    continuous-time Markov chain. argument q is a q-matrix in the format if a numpy matrix. rows and columns must
+    continuous-time Markov chain. argument q is a q-matrix in the format of a numpy matrix. Rows and columns must
     be in order a,c,g,t. vStart is initial value of v to be tried, and diff is initial step to next v to be tried"""
     def cm(min,max) : 
         result=max 
