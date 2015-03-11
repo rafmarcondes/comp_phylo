@@ -1,6 +1,6 @@
 """
 Exercise 5 - Creating a continuous-time Markov chain class
-@author: Instructions by Jeremy Brown; code itself by Rafael Marcondes
+@author: jembrown
 
 The point of this exercise is to define a new class, called ctmc (for continuous-
 time Markov chain), that contains all necessary information and methods related
@@ -144,52 +144,84 @@ class ctmc(object):
             self.finals+=(chain[-1])
             self.simulations.append(chain) #append the class attributes chains and times with the output of the simulations
             self.times.append(times)
-    def margprob(self) :
+    def margprob(self,v=0) :
         """margprob of character history in each site, using only initial and final states; and margprob
         of whole seq, calculated by multiplying margprobs for each site.
         Margprobs of each site and of whole seq are calculated and stored in object attributes 'sitemargprobs'
         and 'seqmargprob', respectively, but only the margprob of the whole sequence is in the return statement"""
-        for i in range(self.nsites) :
-            initial=self.starts[i]
-            final=self.finals[i]
-            import scipy    
-            pmatrix=scipy.linalg.expm(self.q*self.v)
-            iindex=0
-            findex=0
-            if initial=='a':
+               
+        if v==0 :
+            for i in range(self.nsites) :
+                initial=self.starts[i]
+                final=self.finals[i]
+                import scipy    
+                pmatrix=scipy.linalg.expm(self.q*self.v)
                 iindex=0
-            if initial=='c':
-                iindex=1
-            if initial=='g':
-                iindex=2
-            if initial=='t':
-                iindex=3
-            if final=='a':
                 findex=0
-            if final=='c':
-                findex=1
-            if final=='g':
-                findex=2
-            if final=='t':
-                findex=3
-            mp=pmatrix[iindex,findex]
-            self.sitemargprobs.append(mp)
-        self.seqmargprob=1
-        for j in self.sitemargprobs:
-            self.seqmargprob*=j
-        return self.seqmargprob
+                if initial=='a':
+                    iindex=0
+                if initial=='c':
+                    iindex=1
+                if initial=='g':
+                    iindex=2
+                if initial=='t':
+                    iindex=3
+                if final=='a':
+                    findex=0
+                if final=='c':
+                    findex=1
+                if final=='g':
+                    findex=2
+                if final=='t':
+                    findex=3
+                mp=pmatrix[iindex,findex]
+                self.sitemargprobs.append(mp)
+            self.seqmargprob=1
+            for j in self.sitemargprobs:
+                self.seqmargprob*=j
+            return self.seqmargprob
+        if v!=0:
+            for i in range(self.nsites) :
+                initial=self.starts[i]
+                final=self.finals[i]
+                import scipy    
+                pmatrix=scipy.linalg.expm(self.q*v)
+                iindex=0
+                findex=0
+                if initial=='a':
+                    iindex=0
+                if initial=='c':
+                    iindex=1
+                if initial=='g':
+                    iindex=2
+                if initial=='t':
+                    iindex=3
+                if final=='a':
+                    findex=0
+                if final=='c':
+                    findex=1
+                if final=='g':
+                    findex=2
+                if final=='t':
+                    findex=3
+                mp=pmatrix[iindex,findex]
+                self.sitemargprobs.append(mp)
+            self.seqmargprob=1
+            for j in self.sitemargprobs:
+                self.seqmargprob*=j
+            return self.seqmargprob            
 
     def mlv(self,vStart,diff): 
+        """vStart MUST be different from 0"""
         vCurr=vStart
-        
         while diff>0.001 :
             """CHANGE THE ABOVE TO BE AN ARGUMENT"""
-            likeCurr=self.margprob(self,vCurr)
+            likeCurr=self.margprob(v=vCurr)
             vUp=vCurr+diff
             vDown=vCurr-diff
             """CHANGE THIS TO MAKE SURE v DOESNT GO BELOW ZERO"""
-            likeUp=self.margprob(self,vUp)
-            likeDown=self.margprob(self,vDown)
+            likeUp=self.margprob(v=vUp)
+            likeDown=self.margprob(v=vDown)
             if likeDown>likeCurr :
                 vCurr=vDown
                 vUp=vCurr+diff
@@ -200,17 +232,14 @@ class ctmc(object):
                 vDown=vCurr-diff
             else :
                 diff=(diff/2)            
-        return vCurr                    
+        return vCurr             
     
-
 
 
 """"
 defined class above
 testing it below
 """
-
-
 
 
 
@@ -231,3 +260,4 @@ mymark.margprob()
 print(mymark.sitemargprobs)
 print(mymark.seqmargprob)
 
+print(mymark.mlv(vStart=7,diff=1)) # not working - estimated v coming out always equal to vStart
