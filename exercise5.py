@@ -144,94 +144,83 @@ class ctmc(object):
             self.finals+=(chain[-1])
             self.simulations.append(chain) #append the class attributes chains and times with the output of the simulations
             self.times.append(times)
-    def margprob(self,v=0) :
-        """margprob of character history in each site, using only initial and final states; and margprob
-        of whole seq, calculated by multiplying margprobs for each site.
-        Margprobs of each site and of whole seq are calculated and stored in object attributes 'sitemargprobs'
-        and 'seqmargprob', respectively, but only the margprob of the whole sequence is in the return statement"""
-               
-        if v==0 :
+    
+    def margprobssites(self) :
+        """outputs a list contining margprobs for each site in sequence"""
+        sitemargprobs=[]
+        import scipy
+        pmatrix=scipy.linalg.expm(self.q*self.v)
+        for i in range(self.nsites) :
+            initial=self.starts[i]
+            final=self.finals[i]
+            iindex=self.staspa.index(initial)
+            findex=self.staspa.index(final)
+            mp=pmatrix[iindex,findex]
+            sitemargprobs.append(mp)
+        return sitemargprobs
+        
+
+        
+    def margprobseq(self,v=None) :
+        """margprob of whole seq, calculated by multiplying margprobs for each site.
+                
+        The keyword argument v is supposed to be used in situations where i don't want to use the self.v associated
+        with the object and used to run the simulation, such as in calculating ML (method below), where the v used will
+        be vCurr, vUp and vDown"""  
+        if v is None :    
+            sitemargprobs=[]
             for i in range(self.nsites) :
                 initial=self.starts[i]
                 final=self.finals[i]
                 import scipy    
                 pmatrix=scipy.linalg.expm(self.q*self.v)
-                iindex=0
-                findex=0
-                if initial=='a':
-                    iindex=0
-                if initial=='c':
-                    iindex=1
-                if initial=='g':
-                    iindex=2
-                if initial=='t':
-                    iindex=3
-                if final=='a':
-                    findex=0
-                if final=='c':
-                    findex=1
-                if final=='g':
-                    findex=2
-                if final=='t':
-                    findex=3
+                iindex=self.staspa.index(initial)
+                findex=self.staspa.index(final)
                 mp=pmatrix[iindex,findex]
-                self.sitemargprobs.append(mp)
-            self.seqmargprob=1
-            for j in self.sitemargprobs:
-                self.seqmargprob*=j
-            return self.seqmargprob
-        if v!=0:
+                sitemargprobs.append(mp)
+            seqmargprob=1
+            for j in sitemargprobs:
+                seqmargprob*=j
+            return seqmargprob
+        else:
+            sitemargprobs=[]
             for i in range(self.nsites) :
                 initial=self.starts[i]
                 final=self.finals[i]
                 import scipy    
                 pmatrix=scipy.linalg.expm(self.q*v)
-                iindex=0
-                findex=0
-                if initial=='a':
-                    iindex=0
-                if initial=='c':
-                    iindex=1
-                if initial=='g':
-                    iindex=2
-                if initial=='t':
-                    iindex=3
-                if final=='a':
-                    findex=0
-                if final=='c':
-                    findex=1
-                if final=='g':
-                    findex=2
-                if final=='t':
-                    findex=3
+                iindex=self.staspa.index(initial)
+                findex=self.staspa.index(final)
                 mp=pmatrix[iindex,findex]
-                self.sitemargprobs.append(mp)
-            self.seqmargprob=1
-            for j in self.sitemargprobs:
-                self.seqmargprob*=j
-            return self.seqmargprob            
+                sitemargprobs.append(mp)
+            seqmargprob=1
+            for j in sitemargprobs:
+                seqmargprob*=j
+            return seqmargprob
+                
 
     def mlv(self,vStart,diff): 
         """vStart MUST be different from 0"""
         vCurr=vStart
-        while diff>0.001 :
+        while diff>0.0001 :
             """CHANGE THE ABOVE TO BE AN ARGUMENT"""
-            likeCurr=self.margprob(v=vCurr)
+            likeCurr=self.margprobseq(v=vCurr)
             vUp=vCurr+diff
             vDown=vCurr-diff
-            """CHANGE THIS TO MAKE SURE v DOESNT GO BELOW ZERO"""
-            likeUp=self.margprob(v=vUp)
-            likeDown=self.margprob(v=vDown)
+            if (vDown < 0):
+                vDown = 0
+            likeUp=self.margprobseq(v=vUp)
+            likeDown=self.margprobseq(v=vDown)
             if likeDown>likeCurr :
                 vCurr=vDown
                 vUp=vCurr+diff
                 vDown=vCurr-diff
-            if likeUp>likeCurr :
+            elif likeUp>likeCurr :
                 vCurr=vUp
                 vUp=vCurr+diff
                 vDown=vCurr-diff
             else :
-                diff=(diff/2)            
+                diff=(diff/2.0)            
         return vCurr             
     
 
@@ -245,7 +234,7 @@ testing it below
 
 import numpy
 myq=numpy.matrix('-1.916 0.541 0.787 0.588; 0.148 -1.069 0.415 0.506; 0.286 0.170 -0.591 0.135; 0.525 0.236 0.594 -1.355') 
-mymark=ctmc(staspa=['a','c','g','t'],q=myq,v=10,simulations=[],times=[],nsites=30,starts='',finals='',sitemargprobs=[],seqmargprob=1)
+mymark=ctmc(staspa=['a','c','g','t'],q=myq,v=0.239,simulations=[],times=[],nsites=30,starts='',finals='',sitemargprobs=[],seqmargprob=1)
 
 mymark.simulate()
 
@@ -255,9 +244,12 @@ print(mymark.times)
 print(mymark.starts)
 print(mymark.finals)
 
-mymark.margprob()
+print(mymark.margprobssites())
+print(mymark.margprobseq())
 
 print(mymark.sitemargprobs)
 print(mymark.seqmargprob)
 
-print(mymark.mlv(vStart=7,diff=1)) # not working - estimated v coming out always equal to vStart
+print(mymark.mlv(vStart=0.2,diff=0.1))
+
+
