@@ -1,6 +1,6 @@
 """
 Exercise 6 - Creating and Using Node and Tree Classes
-@author: jembrown
+@author: jembrown and Rafael Marcondes
 
 Below is the beginning of a Node class definition and a simple example of how
 to link nodes to form a tree. Use this as a springboard to start thinking about:
@@ -15,8 +15,6 @@ to link nodes to form a tree. Use this as a springboard to start thinking about:
 """
 
 # ---> Defining Node and Tree classes <---
-u=9
-
 
 class Node(object):
    
@@ -29,9 +27,9 @@ class Node(object):
             self.children = children
             
     def printnames(self):
-        """the method we physically acted in class, to retrieve the name of all the tips
-        descending from a node - NOT WORKING!"""
-        if self.children is None:
+        """the method we physically acted in class, to print the names of all the tips
+        descending from a node"""
+        if len(self.children)==0:
             print self.name
         else:        
             for child in self.children:
