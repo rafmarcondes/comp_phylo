@@ -256,7 +256,7 @@ class Tree:
         """ each node will have a ctmc object called 'markov' """        
         node.markov.simulate()
         node.seq=node.markov.finals
-        """ in addition to 'node.evolution.finals', seq in the node will also be stored in
+        """ in addition to 'node.markov.finals', seq in the node will also be stored in
         node.seq, for easier retrieval"""
         for child in node.children:
             self.simulate(child)
