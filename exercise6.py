@@ -71,7 +71,7 @@ class Tree:
             print node.name
         else:        
             for child in node.children:
-                child.printnames()
+                child.printNames()
  
    
     def treeLength(self,node):  # It works!!!
@@ -88,12 +88,29 @@ class Tree:
         return sum(ttl)
 
 
+    #def newick(self,node):
+
+    def setmodels(self,node):
+        """
+        This method of a Tree object defines a ctmc object associated with all
+        nodes that have a branch length (i.e., all but the root).
+        
+        So far, the method also defines a ctmc associated with the root. This doesnt cause problems,
+        because then the simulation of evolution in the root will just have the same initial and final
+        sequences, given that its brl is 0. I guess this may be precious memory and time consumed, though, and
+        plan on improving on this soon.
+        """
+                
+        node.markov=ctmc(staspa=['a','c','g','t'],q=myq,v=node.brl,simulations=[],times=[],nsites=30,starts='',finals='',sitemargprobs=[],seqmargprob=1)
+        for child in node.children :
+            self.setmodels(child)
+        
+
     def treesimulate(self,node):
         """
         This method simulates evolution along the branches of a tree, taking
         the root node as its initial argument.
         """ 
-        node.markov=ctmc(staspa=['a','c','g','t'],q=myq,v=node.brl,simulations=[],times=[],nsites=30,starts='',finals='',sitemargprobs=[],seqmargprob=1)
         if node.parent==None :        
             node.markov.branchsimulate()
             node.seq=node.markov.finals
@@ -104,6 +121,8 @@ class Tree:
         node.seq, for easier retrieval"""
         for child in node.children:
             self.treesimulate(child)
+            
+    #def printSeqs(self,node):
             
         """so far, the ctmc object attached to the node object seems to be working alright, as is running
         the simulation in the tree using recursion (the method above). What I still have to do, though, is
@@ -137,7 +156,10 @@ print mytree.spB.parent.name
 print mytree.root.parent
 
 print mytree.spA.brl
+print mytree.root.brl
 
+
+mytree.setmodels(mytree.root)
 
 mytree.treesimulate(mytree.root)
 
