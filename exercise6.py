@@ -90,7 +90,7 @@ class Tree:
 
     #def newick(self,node):
 
-    def setmodels(self,node):
+    def setmodels(self,node,qmatrix):
         """
         This method of a Tree object defines a ctmc object associated with all
         nodes that have a branch length (i.e., all but the root).
@@ -100,10 +100,10 @@ class Tree:
         sequences, given that its brl is 0. I guess this may be precious memory and time consumed, though, and
         plan on improving on this soon.
         """
-                
-        node.markov=ctmc(staspa=['a','c','g','t'],q=myq,v=node.brl,simulations=[],times=[],nsites=30,starts='',finals='',sitemargprobs=[],seqmargprob=1)
+        
+        node.markov=ctmc(q=qmatrix,staspa=['a','c','g','t'],v=node.brl,simulations=[],times=[],nsites=30,starts='',finals='',sitemargprobs=[],seqmargprob=1)
         for child in node.children :
-            self.setmodels(child)
+            self.setmodels(node=child,qmatrix=qmatrix)
         
 
     def treesimulate(self,node):
@@ -122,14 +122,20 @@ class Tree:
         for child in node.children:
             self.treesimulate(child)
             
-    #def printSeqs(self,node):
-            
-        """so far, the ctmc object attached to the node object seems to be working alright, as is running
-        the simulation in the tree using recursion (the method above). What I still have to do, though, is
-        somehow make the initial sequence in each node be the final sequence passed from the parent node. I think
-        that will require changes in the ctmc.simulate method.
+    def printseqs(self,node):
         """
-       
+        This method prints out the names of the tips and their associated
+        sequences as an alignment (matrix).
+        """
+        if len(node.children)==0:
+            print node.name, node.seq
+        else:
+            for child in node.children:
+                self.printseqs(child)
+                
+                
+            
+
         
 """
 DEFINITIONS ABOVE, USES BELOW
@@ -143,12 +149,16 @@ mytree.spA.parent=mytree.ancAB
 mytree.spB.parent=mytree.ancAB
 
 
-
 mytree.root.printnames()
 mytree.treeLength(mytree.root)
 
 print mytree.root.name
 print mytree.spC.name
+print mytree.spA.brl
+print mytree.spA.parent.name
+
+for n in mytree.root.children:
+    print n.name
 
 print mytree.root.children[0].name
 
@@ -159,10 +169,14 @@ print mytree.spA.brl
 print mytree.root.brl
 
 
-mytree.setmodels(mytree.root)
+mytree.setmodels(node=mytree.root,qmatrix=myq)
 
 mytree.treesimulate(mytree.root)
 
 print mytree.root.seq
 print mytree.ancAB.seq
 print mytree.spA.seq
+
+
+
+mytree.printseqs(mytree.root)
