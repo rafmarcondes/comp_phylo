@@ -110,7 +110,7 @@ answer these questions:
 we space out our sampling?
 A: When sampling every generation, the sampled parameter values vary a lot around the mean, and the plot looks like
 a "fuzzy catterpilar". When spacing out the sampling (to every 10 and 100 generations), the variation around the mean
- is smoother and less pronounced. which is indicative of poor sampling of theposterior distribution.
+ is smoother and less pronounced, which is indicative of poor sampling of the posterior distribution.
 
 (2) How does the width of the 95% credible interval change as we add/subtract data?
 As "data" (the number of draws from the binomial) is subtracted, the confidence interval broadens
@@ -120,5 +120,9 @@ As "data" (the number of draws from the binomial) is subtracted, the confidence 
 
 (3) How does the trace plot change if the proposal window becomes much bigger 
 or smaller for a given amount of data?
+If the proposal window is made bigger, the trace plot becomes increasingly "Manhattan skyline"-like, that is, the chain spends
+long times in the same parameter value before abruptly changing to a new one. If the window is made smaller, the trace plot
+becomes more like a line, because the difference between parameters tried gets smaller and smaller. The true value of the
+parameter is never reached.
 
 """
